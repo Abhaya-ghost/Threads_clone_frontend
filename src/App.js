@@ -1,24 +1,40 @@
-import logo from './logo.svg';
+import { Navigate, Route, Routes } from 'react-router-dom';
 import './App.css';
+import { Box, Container } from "@chakra-ui/react"
+import UserPage from './pages/UserPage';
+import PostPage from './pages/PostPage';
+import Header from './components/Header';
+import HomePage from './pages/HomePage';
+import AuthPage from './pages/AuthPage';
+import { useRecoilValue } from 'recoil';
+import userAtom from './atoms/userAtom';
+import UpdateprofilePage from './pages/UpdateprofilePage';
+import CreatePost from './components/CreatePost';
+import ChatPage from './pages/ChatPage';
 
 function App() {
+  const user = useRecoilValue(userAtom);
   return (
-    <div className="App">
-      <header className="App-header">
-        <img src={logo} className="App-logo" alt="logo" />
-        <p>
-          Edit <code>src/App.js</code> and save to reload.
-        </p>
-        <a
-          className="App-link"
-          href="https://reactjs.org"
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          Learn React
-        </a>
-      </header>
-    </div>
+    <Box position={'relative'} w={'full'}>
+      <Container maxW='620px'>
+        <Header />
+        <Routes>
+          <Route path='/' element={user ? <HomePage /> : <Navigate to='/auth' />} />
+          <Route path='/auth' element={!user ? <AuthPage /> : <Navigate to='/' />} />
+          <Route path='/update' element={user ? <UpdateprofilePage /> : <Navigate to='/auth' />} />
+          <Route path='/:username' element={user ? (
+            <>
+              <UserPage />
+              <CreatePost />
+            </>
+          ) : (
+            <UserPage />
+          )} />
+          <Route path='/:username/post/:pid' element={<PostPage />} />
+          <Route path='/chat' element={user ? <ChatPage /> : <Navigate to='/auth' />} />
+        </Routes>
+      </Container>
+    </Box>
   );
 }
 
